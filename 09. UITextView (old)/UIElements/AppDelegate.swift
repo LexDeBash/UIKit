@@ -2,8 +2,8 @@
 //  AppDelegate.swift
 //  UIElements
 //
-//  Created by Debash on 08.05.2018.
-//  Copyright © 2018 swiftbook.ru. All rights reserved.
+//  Created by Alexey Efimov on 12.07.2018.
+//  Copyright © 2018 Alexey Efimov. All rights reserved.
 //
 
 import UIKit

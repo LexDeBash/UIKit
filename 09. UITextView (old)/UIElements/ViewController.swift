@@ -10,9 +10,9 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    @IBOutlet var countLabel: UILabel!
-    @IBOutlet var textView: UITextView!
-    @IBOutlet var textViewBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var countLabel: UILabel!
+    @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,39 +23,46 @@ class ViewController: UIViewController {
         textView.backgroundColor = self.view.backgroundColor
         textView.layer.cornerRadius = 10
         
+        // Отслеживаем появление клавиатуры
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateTextView(notification:)),
-                                               name: UIResponder.keyboardWillShowNotification,
+                                               name: UIResponder.keyboardWillChangeFrameNotification,
                                                object: nil)
-        
+
+        // Отслеживаем скрытие клавиатуры
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateTextView(notification:)),
                                                name: UIResponder.keyboardWillHideNotification,
                                                object: nil)
+
     }
     
+    // Скрытие клавиатуры по тапу за пределами Text View
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         
-        self.view.endEditing(true) // Скрытие клавиатуры вызванной для любого объекта
+        self.view.endEditing(true) // Скрывает клавиатуру, вызванную для любого объекта
         
-//        textView.resignFirstResponder() // Скрытие клавиатуры вызванной для конкретного объекта
+        //        textView.resignFirstResponder() // Скрывыает клавиатуру, вызаванную для конкретного объекта
     }
     
     @objc func updateTextView(notification: Notification) {
         
-        guard
-            let userInfo = notification.userInfo as? [String: Any],
+        guard let userInfo = notification.userInfo as? [String: AnyObject],
             let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
             else { return }
         
         if notification.name == UIResponder.keyboardWillHideNotification {
-            textView.contentInset = UIEdgeInsets.zero
+            textView.contentInset = UIEdgeInsets(top: 0,
+                                                 left: 0,
+                                                 bottom: 0,
+                                                 right: 0)
         } else {
             textView.contentInset = UIEdgeInsets(top: 0,
                                                  left: 0,
-                                                 bottom: keyboardFrame.height - textViewBottomConstraint.constant,
+                                                 bottom: keyboardFrame.height - bottomConstraint.constant,
                                                  right: 0)
+            
             textView.scrollIndicatorInsets = textView.contentInset
         }
         
@@ -65,12 +72,12 @@ class ViewController: UIViewController {
 
 extension ViewController: UITextViewDelegate {
     
-    func textViewDidBeginEditing(_ textView: UITextView) {
+    func textViewDidBeginEditing(_ textView: UITextView) { // Срабатывает при тапе на Text View
         textView.backgroundColor = .white
         textView.textColor = .gray
     }
     
-    func textViewDidEndEditing(_ textView: UITextView) {
+    func textViewDidEndEditing(_ textView: UITextView) { // Срабатывает по окончании работы с Text View
         textView.backgroundColor = self.view.backgroundColor
         textView.textColor = .black
     }
